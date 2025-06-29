@@ -2,7 +2,7 @@ import os
 import threading
 import time
 import asyncio
-import requests
+import httpx
 from dotenv import load_dotenv
 from pyrogram import Client, filters, idle
 from flask import Flask, send_from_directory
@@ -51,14 +51,15 @@ def verify_key(key: str | None):
         raise HTTPException(status_code=401, detail='Invalid API key')
 
 # Webhook sender
-def post_webhook(data: dict):
+async def post_webhook(data: dict):
     if not WEBHOOK_URL:
         return
     headers = {}
     if WEBHOOK_API_KEY:
         headers['x-api-key'] = WEBHOOK_API_KEY
     try:
-        requests.post(WEBHOOK_URL, json=data, headers=headers, timeout=5)
+        async with httpx.AsyncClient() as session:
+            await session.post(WEBHOOK_URL, json=data, headers=headers, timeout=5)
     except Exception as e:
         print(f'Failed to send webhook: {e}')
 
@@ -85,18 +86,18 @@ async def handle_message(_, message):
     data = message.to_dict()
     if file_url:
         data['file_url'] = file_url
-    post_webhook(data)
+    await post_webhook(data)
 
 @client.on_edited_message(filters.all)
 async def handle_edited(_, message):
     data = message.to_dict()
     data['edited'] = True
-    post_webhook(data)
+    await post_webhook(data)
 
 @client.on_inline_query()
 async def handle_inline(_, inline_query):
     data = inline_query.to_dict()
-    post_webhook(data)
+    await post_webhook(data)
 
 # API models and endpoints
 class SendMessage(BaseModel):
