@@ -43,7 +43,6 @@ API_PORT=8001
 Create necessary folders:
 ```bash
 mkdir -p sessions userbot_media
-python init_session.py   # run once to generate the session
 ```
 
 ## Running
@@ -51,7 +50,7 @@ python init_session.py   # run once to generate the session
 python userbot.py
 ```
 
-The first run requires logging in with the phone number specified in `TG_PHONE_NUMBER`. Pyrogram will prompt for the code in the console and, if enabled, your two‑factor password. Subsequent runs will reuse the generated session from the `sessions` folder.
+The first run requires logging in with the phone number specified in `TG_PHONE_NUMBER`. Simply run `python userbot.py` and follow the console prompts to enter the confirmation code (and two‑factor password if enabled). The generated session is stored in the `sessions` folder and will be reused on the next start.
 
 ## API
 - `POST /sendMessage`

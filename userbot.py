@@ -43,7 +43,28 @@ def media(filename):
 # FastAPI app for sending messages
 api_app = FastAPI()
 
-client = Client(TG_SESSION_NAME, api_id=TG_API_ID, api_hash=TG_API_HASH, workdir=SESSIONS_DIR, phone_number=TG_PHONE_NUMBER)
+session_path = os.path.join(SESSIONS_DIR, f"{TG_SESSION_NAME}.session")
+if not os.path.exists(session_path):
+    with Client(
+        TG_SESSION_NAME,
+        api_id=TG_API_ID,
+        api_hash=TG_API_HASH,
+        workdir=SESSIONS_DIR,
+        phone_number=TG_PHONE_NUMBER,
+    ):
+        pass
+    print(
+        "\u2705 Session created successfully. Please restart userbot.py to start the service."
+    )
+    raise SystemExit
+
+client = Client(
+    TG_SESSION_NAME,
+    api_id=TG_API_ID,
+    api_hash=TG_API_HASH,
+    workdir=SESSIONS_DIR,
+    phone_number=TG_PHONE_NUMBER,
+)
 
 # Helper to verify API key
 def verify_key(key: str | None):
