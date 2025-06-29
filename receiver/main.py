@@ -1,5 +1,5 @@
 import os
-import threading
+import asyncio
 import time
 import requests
 from flask import Flask, send_from_directory
@@ -21,7 +21,7 @@ def media(filename):
     return send_from_directory(MEDIA_DIR, filename)
 
 
-def cleanup_media():
+async def cleanup_media():
     while True:
         now = time.time()
         for f in os.listdir(MEDIA_DIR):
@@ -31,7 +31,7 @@ def cleanup_media():
                     os.remove(fp)
                 except Exception:
                     pass
-        time.sleep(3600)
+        await asyncio.sleep(3600)
 
 
 def start_flask():
@@ -67,11 +67,15 @@ async def handle_message(_, message):
             print(f"Failed to send webhook: {e}")
 
 
-def main():
-    threading.Thread(target=start_flask, daemon=True).start()
-    threading.Thread(target=cleanup_media, daemon=True).start()
-    client.run()
+async def main():
+    await client.start()
+
+    loop = asyncio.get_running_loop()
+    loop.create_task(asyncio.to_thread(start_flask))
+    loop.create_task(cleanup_media())
+
+    await client.idle()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
