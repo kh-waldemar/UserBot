@@ -43,6 +43,7 @@ API_PORT=8001
 Create necessary folders:
 ```bash
 mkdir -p sessions userbot_media
+python init_session.py   # run once to generate the session
 ```
 
 ## Running
