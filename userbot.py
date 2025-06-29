@@ -12,13 +12,13 @@ import uvicorn
 
 load_dotenv()
 
-# Directories
-if not os.path.exists('sessions'):
-    os.makedirs('sessions', exist_ok=True)
+# Directories relative to this file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SESSIONS_DIR = os.path.join(BASE_DIR, 'sessions')
+os.makedirs(SESSIONS_DIR, exist_ok=True)
 
-MEDIA_DIR = os.path.join(os.getcwd(), 'userbot_media')
-if not os.path.exists(MEDIA_DIR):
-    os.makedirs(MEDIA_DIR, exist_ok=True)
+MEDIA_DIR = os.path.join(BASE_DIR, 'userbot_media')
+os.makedirs(MEDIA_DIR, exist_ok=True)
 
 # Environment
 TG_API_ID = int(os.environ['TG_API_ID'])
@@ -43,7 +43,7 @@ def media(filename):
 # FastAPI app for sending messages
 api_app = FastAPI()
 
-client = Client(TG_SESSION_NAME, api_id=TG_API_ID, api_hash=TG_API_HASH, workdir='sessions', phone_number=TG_PHONE_NUMBER)
+client = Client(TG_SESSION_NAME, api_id=TG_API_ID, api_hash=TG_API_HASH, workdir=SESSIONS_DIR, phone_number=TG_PHONE_NUMBER)
 
 # Helper to verify API key
 def verify_key(key: str | None):
